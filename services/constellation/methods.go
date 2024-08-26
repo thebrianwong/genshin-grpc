@@ -6,6 +6,7 @@ import (
 	"genshin-grpc/keys"
 	pb_common "genshin-grpc/proto/common"
 	pb_constellation "genshin-grpc/proto/constellation"
+	"genshin-grpc/utils"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -41,7 +42,7 @@ func (*Server) GetConstellation(ctx context.Context, in *pb_constellation.GetCon
 		Name:    characterName,
 		Gender:  gender,
 		Height:  height,
-		Element: element,
+		Element: utils.ElementStringToEnum(element),
 	}
 
 	constellation := pb_common.Constellation{

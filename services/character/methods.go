@@ -6,6 +6,7 @@ import (
 	"genshin-grpc/keys"
 	pb_character "genshin-grpc/proto/character"
 	pb_common "genshin-grpc/proto/common"
+	"genshin-grpc/utils"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -44,7 +45,7 @@ func (*Server) GetCharacter(ctx context.Context, in *pb_character.GetCharacterRe
 		Name:    name,
 		Gender:  gender,
 		Height:  height,
-		Element: element,
+		Element: utils.ElementStringToEnum(element),
 	}
 
 	// return as array even if only one value
