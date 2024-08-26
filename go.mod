@@ -1,4 +1,4 @@
-module genshin-test
+module genshin-grpc
 
 go 1.23.0
 

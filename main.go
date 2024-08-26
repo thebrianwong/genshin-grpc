@@ -8,11 +8,11 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
-	character_pb "genshin-test/proto/character"
-	character_service "genshin-test/services/character"
+	character_pb "genshin-grpc/proto/character"
+	character_service "genshin-grpc/services/character"
 
-	constellation_pb "genshin-test/proto/constellation"
-	constellation_service "genshin-test/services/constellation"
+	constellation_pb "genshin-grpc/proto/constellation"
+	constellation_service "genshin-grpc/services/constellation"
 
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"

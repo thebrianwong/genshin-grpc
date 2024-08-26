@@ -1,6 +1,6 @@
 package constellation
 
-import pb "genshin-test/proto/constellation"
+import pb "genshin-grpc/proto/constellation"
 
 type Server struct {
 	pb.UnimplementedConstellationServiceServer

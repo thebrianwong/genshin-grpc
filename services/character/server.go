@@ -1,6 +1,6 @@
 package character
 
-import pb "genshin-test/proto/character"
+import pb "genshin-grpc/proto/character"
 
 type Server struct {
 	pb.UnimplementedCharacterServiceServer

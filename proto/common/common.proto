@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "genshin-test/proto/common";
+option go_package = "genshin-grpc/proto/common";
 
 package common;
 

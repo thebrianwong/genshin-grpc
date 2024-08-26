@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"genshin-test/keys"
+	"genshin-grpc/keys"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/jackc/pgx/v5"

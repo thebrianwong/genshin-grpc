@@ -3,9 +3,9 @@ package character
 import (
 	"context"
 
-	"genshin-test/keys"
-	pb_character "genshin-test/proto/character"
-	pb_common "genshin-test/proto/common"
+	"genshin-grpc/keys"
+	pb_character "genshin-grpc/proto/character"
+	pb_common "genshin-grpc/proto/common"
 
 	"github.com/jackc/pgx/v5"
 )

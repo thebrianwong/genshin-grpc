@@ -3,9 +3,9 @@ package constellation
 import (
 	"context"
 
-	"genshin-test/keys"
-	pb_common "genshin-test/proto/common"
-	pb_constellation "genshin-test/proto/constellation"
+	"genshin-grpc/keys"
+	pb_common "genshin-grpc/proto/common"
+	pb_constellation "genshin-grpc/proto/constellation"
 
 	"github.com/jackc/pgx/v5"
 )
