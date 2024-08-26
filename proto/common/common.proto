@@ -4,11 +4,21 @@ option go_package = "genshin-grpc/proto/common";
 
 package common;
 
+enum Element {
+  ANEMO = 0;
+  GEO = 1;
+  ELECTRO = 2;
+  DENDRO = 3;
+  HYDRO = 4;
+  PYRO = 5;
+  CRYO = 6;
+}
+
 message Character {
   string name = 1;
   string gender = 2;
   string height = 3;
-  string element = 4;
+  Element element = 4;
 }
 
 message Constellation {
