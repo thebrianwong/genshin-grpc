@@ -1,35 +1,23 @@
 package main
 
 import (
-	"context"
 	"log"
 	"net"
-	"os"
-
-	"github.com/jackc/pgx/v5"
 
 	character_pb "genshin-grpc/proto/character"
 	character_service "genshin-grpc/services/character"
+	"genshin-grpc/utils"
 
 	constellation_pb "genshin-grpc/proto/constellation"
 	constellation_service "genshin-grpc/services/constellation"
 
-	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	dbUrl := os.Getenv("DATABASE_URL")
-	conn, err := pgx.Connect(context.Background(), dbUrl)
-	if err != nil {
-		log.Fatalln("Unable to connect to database:", err)
-	}
+	utils.LoadEnvVars("")
+	conn := utils.ConnectToDb()
 
 	lis, err := net.Listen("tcp", ":50052")
 	if err != nil {

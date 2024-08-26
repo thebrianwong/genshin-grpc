@@ -6,25 +6,13 @@ import (
 	pb_character "genshin-grpc/proto/character"
 	pb_common "genshin-grpc/proto/common"
 	"genshin-grpc/services/character"
-	"log"
-	"os"
+	"genshin-grpc/utils"
 	"testing"
-
-	"github.com/jackc/pgx/v5"
-	"github.com/joho/godotenv"
 )
 
 func TestGetCharacter(t *testing.T) {
-	err := godotenv.Load("../../.env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	dbUrl := os.Getenv("DATABASE_URL")
-	conn, err := pgx.Connect(context.Background(), dbUrl)
-	if err != nil {
-		log.Fatalln("Unable to connect to database:", err)
-	}
+	utils.LoadEnvVars("../../.env")
+	conn := utils.ConnectToDb()
 
 	s := character.Server{}
 	req := &pb_character.GetCharacterRequest{Id: "1"}
