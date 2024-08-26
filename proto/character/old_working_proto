@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option go_package = "github.com/thebrianwong/grpc-test/character";
+
+package character;
+
+import "google/protobuf/struct.proto";
+
+service CharacterService {
+  rpc GetCharacter(GetCharacterRequest) returns (GetCharacterResponse) {}
+}
+
+message GetCharacterRequest {
+  string id = 1;
+}
+
+message GetCharacterResponse {
+  google.protobuf.Struct character = 1;
+}

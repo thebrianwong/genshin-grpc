@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option go_package = "genshin-test/proto/common";
+
+package common;
+
+message Character {
+  string name = 1;
+  string gender = 2;
+  string height = 3;
+  string element = 4;
+}

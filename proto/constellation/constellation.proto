@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option go_package = "proto/constellation";
+
+package constellation;
+
+service ConstellationService {
+  rpc GetConstellation(GetConstellationRequest) returns (GetConstellationResponse) {}
+}
+
+message Character {
+  string name = 1;
+  string gender = 2;
+  string height = 3;
+  string element = 4;
+}
+
+message GetConstellationRequest {
+  string id = 1;
+}
+
+message GetConstellationResponse {
+  repeated Character character = 1;
+}

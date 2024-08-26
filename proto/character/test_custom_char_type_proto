@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+option go_package = "github.com/thebrianwong/grpc-test/character";
+
+package character;
+
+
+
+service CharacterService {
+  rpc GetCharacter(GetCharacterRequest) returns (GetCharacterResponse) {}
+}
+
+message Character {
+  string name = 1;
+  string gender = 2;
+  string height = 3;
+  string element = 4;
+}
+
+message GetCharacterRequest {
+  string id = 1;
+}
+
+message GetCharacterResponse {
+  Character character = 1;
+}

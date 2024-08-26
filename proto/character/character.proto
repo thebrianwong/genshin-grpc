@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option go_package = "proto/character";
+
+package character;
+
+import "proto/common/common.proto";
+
+service CharacterService {
+  rpc GetCharacter(GetCharacterRequest) returns (GetCharacterResponse) {}
+}
+
+message GetCharacterRequest {
+  string id = 1;
+}
+
+message GetCharacterResponse {
+  repeated common.Character character = 1;
+}
