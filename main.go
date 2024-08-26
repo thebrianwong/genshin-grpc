@@ -8,8 +8,11 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
-	pb "genshin-test/proto/character"
+	character_pb "genshin-test/proto/character"
 	character_service "genshin-test/services/character"
+
+	constellation_pb "genshin-test/proto/constellation"
+	constellation_service "genshin-test/services/constellation"
 
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
@@ -41,7 +44,9 @@ func main() {
 		),
 	)
 
-	pb.RegisterCharacterServiceServer(s, &character_service.Server{})
+	character_pb.RegisterCharacterServiceServer(s, &character_service.Server{})
+	constellation_pb.RegisterConstellationServiceServer(s, &constellation_service.Server{})
+
 	log.Printf("gRPC server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
