@@ -16,6 +16,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 func main() {
@@ -46,6 +47,8 @@ func main() {
 
 	character_pb.RegisterCharacterServiceServer(s, &character_service.Server{})
 	constellation_pb.RegisterConstellationServiceServer(s, &constellation_service.Server{})
+
+	reflection.Register(s)
 
 	log.Printf("gRPC server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
