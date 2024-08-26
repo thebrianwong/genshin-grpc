@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "proto/constellation";
+option go_package = "genshin-test/proto/constellation";
 
 package constellation;
 
