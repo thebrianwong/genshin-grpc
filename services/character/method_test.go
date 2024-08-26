@@ -6,6 +6,7 @@ import (
 	pb_character "genshin-grpc/proto/character"
 	pb_common "genshin-grpc/proto/common"
 	"genshin-grpc/services/character"
+	test_utils "genshin-grpc/tests"
 	"genshin-grpc/utils"
 	"testing"
 )
@@ -31,16 +32,8 @@ func TestGetCharacter(t *testing.T) {
 		Element: pb_common.Element_PYRO,
 	}
 
-	if actual.Name != expected.Name {
-		t.Error("Expected:", actual.Name, "| Got:", expected.Name)
-	}
-	if actual.Gender != expected.Gender {
-		t.Error("Expected:", actual.Gender, "| Got:", expected.Gender)
-	}
-	if actual.Height != expected.Height {
-		t.Error("Expected:", actual.Height, "| Got:", expected.Height)
-	}
-	if actual.Element != expected.Element {
-		t.Error("Expected:", actual.Element, "| Got:", expected.Element)
-	}
+	test_utils.Compare(t, expected.Name, actual.Name)
+	test_utils.Compare(t, expected.Gender, actual.Gender)
+	test_utils.Compare(t, expected.Height, actual.Height)
+	test_utils.Compare(t, expected.Element, actual.Element)
 }
