@@ -4,6 +4,7 @@ import (
 	"log"
 	"net"
 
+	"genshin-grpc/middleware"
 	character_pb "genshin-grpc/proto/character"
 	character_service "genshin-grpc/services/character"
 	"genshin-grpc/utils"
@@ -26,10 +27,10 @@ func main() {
 
 	s := grpc.NewServer(
 		grpc.ChainStreamInterceptor(
-			DBStreamServerInterceptor(conn),
+			middleware.DBStreamServerInterceptor(conn),
 		),
 		grpc.ChainUnaryInterceptor(
-			DBUnaryServerInterceptor(conn),
+			middleware.DBUnaryServerInterceptor(conn),
 		),
 	)
 
