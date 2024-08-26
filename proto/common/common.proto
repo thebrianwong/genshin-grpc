@@ -10,3 +10,9 @@ message Character {
   string height = 3;
   string element = 4;
 }
+
+message Constellation {
+  string name = 1;
+  uint32 level = 2;
+  Character character = 3;
+}
