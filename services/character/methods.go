@@ -28,7 +28,11 @@ func (*Server) GetCharacter(ctx context.Context, in *pb_character.GetCharacterRe
 
 	err := (*db).QueryRow(
 		context.Background(),
-		"SELECT character.name, gender, height, element.name FROM genshin.character INNER JOIN genshin.element ON character.element_id=element.id WHERE character.id=$1",
+		`
+			SELECT character.name, gender, height, element.name FROM genshin.character
+			INNER JOIN genshin.element ON character.element_id=element.id
+			WHERE character.id=$1
+		`,
 		&id,
 	).Scan(&name, &gender, &height, &element) //works
 
