@@ -81,7 +81,7 @@ func TestStreamData(t *testing.T) {
 		t.Fatalf("Error trying to establish connection with StreamData(): %v", err)
 	}
 
-	err = streamConnection.Send(&character_pb.StreamRequest{Message: "hihi"})
+	err = streamConnection.Send(&character_pb.StreamRequest{Message: "hihi", CharacterId: "1"})
 	if err != nil {
 		t.Fatalf("Error sending a request: %v", err)
 	}
@@ -91,7 +91,7 @@ func TestStreamData(t *testing.T) {
 		t.Fatalf("Error handling response: %v", err)
 	}
 
-	expected := "You sent a message: hihi"
+	expected := "Amber says: hihi"
 	actual := resp.Message
 
 	tests.Compare(t, expected, actual)

@@ -57,13 +57,13 @@ func TestStreamData(t *testing.T) {
 	}()
 
 	// send a request to the stream
-	mockStream.RecvChan <- &pb_character.StreamRequest{Message: "test data"}
+	mockStream.RecvChan <- &pb_character.StreamRequest{Message: "hello", CharacterId: "1"}
 	close(mockStream.RecvChan)
 
 	// Check the response from the server
 	resp := <-mockStream.SendChan
 
 	actual := resp.Message
-	expected := "You sent a message: test data"
+	expected := "Amber says: hello"
 	test_utils.Compare(t, expected, actual)
 }
