@@ -16,8 +16,8 @@ func (*Server) StreamData(stream pb_character.CharacterService_StreamDataServer)
 	// test on how you would call the database using context
 	// context can be extracted from stream since it isn't passed as an argument for stream methods
 
-	// ctx := stream.Context()
-	// db := (ctx.Value(keys.DBSession)).(*pgx.Conn)
+	ctx := stream.Context()
+	db := (ctx.Value(keys.DBSession)).(*pgx.Conn)
 	// // var name string
 	// (*db).QueryRow(
 	// 	context.Background(),
@@ -43,7 +43,36 @@ func (*Server) StreamData(stream pb_character.CharacterService_StreamDataServer)
 				errChannel <- err
 				return
 			}
-			msgChannel <- &pb_character.StreamResponse{Message: "You sent a message: " + req.Message}
+
+			var name string
+			var gender string
+			var height string
+			var element string
+
+			err = (*db).QueryRow(
+				context.Background(),
+				`
+					SELECT character.name, gender, height, element.name FROM genshin.character
+					INNER JOIN genshin.element ON character.element_id=element.id
+					WHERE character.id=$1
+				`,
+				req.CharacterId,
+			).Scan(&name, &gender, &height, &element)
+			if err != nil {
+				errChannel <- err
+				return
+			}
+
+			character := pb_common.Character{
+				Name:    name,
+				Gender:  gender,
+				Height:  height,
+				Element: utils.ElementStringToEnum(element),
+			}
+
+			response := []*pb_common.Character{&character}
+
+			msgChannel <- &pb_character.StreamResponse{Message: character.Name + " says: " + req.Message, Character: response}
 		}
 	}()
 

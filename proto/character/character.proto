@@ -20,9 +20,11 @@ message GetCharacterResponse {
 }
 
 message StreamRequest {
-  string message = 1;
+  string characterId = 1;
+  string message = 2;
 }
 
 message StreamResponse {
   string message = 1;
+  repeated common.Character character = 2;
 }
