@@ -2,6 +2,8 @@ package character
 
 import (
 	"context"
+	"log"
+	"time"
 
 	"genshin-grpc/keys"
 	pb_character "genshin-grpc/proto/character"
@@ -10,6 +12,31 @@ import (
 
 	"github.com/jackc/pgx/v5"
 )
+
+func (*Server) StreamData(stream pb_character.CharacterService_StreamDataServer) error {
+	msgChannel := make(chan *pb_character.StreamResponse)
+
+	go func() {
+		for {
+			time.Sleep(5 * time.Second)
+			msgChannel <- &pb_character.StreamResponse{Message: "The current datetime is: " + time.Now().Format("January 1, 2006 | 3:04:05PM")}
+		}
+	}()
+
+	for {
+		select {
+		case <-stream.Context().Done():
+			// Handle client disconnection or cancellation
+			log.Println("Client disconnected")
+			return nil
+		case update := <-msgChannel:
+			if err := stream.Send(update); err != nil {
+				return err
+			}
+			log.Printf("Sent update: %s", update.Message)
+		}
+	}
+}
 
 func (*Server) GetCharacter(ctx context.Context, in *pb_character.GetCharacterRequest) (*pb_character.GetCharacterResponse, error) {
 	id := in.Id
