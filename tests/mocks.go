@@ -12,7 +12,7 @@ import (
 // MockStream implements grpc.BidiStreamingServer with generic parameters
 type MockStream struct {
 	grpc.ServerStream
-	Ctx      context.Context
+	Ctx      context.Context // used for passing db connection
 	RecvChan chan *pb_character.StreamRequest
 	SendChan chan *pb_character.StreamResponse
 }

@@ -4,20 +4,18 @@ import (
 	"context"
 	"log"
 
-	"genshin-grpc/keys"
 	pb_character "genshin-grpc/proto/character"
 	pb_common "genshin-grpc/proto/common"
 	"genshin-grpc/utils"
-
-	"github.com/jackc/pgx/v5"
 )
 
-func (*Server) StreamData(stream pb_character.CharacterService_StreamDataServer) error {
+func (s *Server) StreamData(stream pb_character.CharacterService_StreamDataServer) error {
 	// test on how you would call the database using context
 	// context can be extracted from stream since it isn't passed as an argument for stream methods
 
-	ctx := stream.Context()
-	db := (ctx.Value(keys.DBSession)).(*pgx.Conn)
+	// ctx := stream.Context()
+	// db := (ctx.Value(keys.DBSession)).(*pgx.Conn)
+	db := s.DB
 	// // var name string
 	// (*db).QueryRow(
 	// 	context.Background(),
@@ -105,13 +103,17 @@ func (*Server) StreamData(stream pb_character.CharacterService_StreamDataServer)
 	}
 }
 
-func (*Server) GetCharacter(ctx context.Context, in *pb_character.GetCharacterRequest) (*pb_character.GetCharacterResponse, error) {
+func (s *Server) GetCharacter(ctx context.Context, in *pb_character.GetCharacterRequest) (*pb_character.GetCharacterResponse, error) {
 	id := in.Id
 
 	// db connection established during server initialization
 	// and passed to the gRPC server to be used throughout the app
+
 	// via context
-	db := (ctx.Value(keys.DBSession)).(*pgx.Conn)
+	// db := (ctx.Value(keys.DBSession)).(*pgx.Conn)
+
+	// via dependency injection into server
+	db := s.DB
 
 	// Scan into these variables because there is this error
 	// if you try to scan directly into the proto Character struct

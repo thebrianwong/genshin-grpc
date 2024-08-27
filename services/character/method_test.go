@@ -2,7 +2,6 @@ package character_test
 
 import (
 	"context"
-	"genshin-grpc/keys"
 	pb_character "genshin-grpc/proto/character"
 	pb_common "genshin-grpc/proto/common"
 	"genshin-grpc/services/character"
@@ -15,10 +14,13 @@ func TestGetCharacter(t *testing.T) {
 	utils.LoadEnvVars("../../.env")
 	conn := utils.ConnectToDb()
 
-	s := character.Server{}
+	s := character.Server{DB: conn}
 	req := &pb_character.GetCharacterRequest{Id: "1"}
 	ctx := context.Background()
-	ctx = context.WithValue(ctx, keys.DBSession, conn)
+
+	// previously passing db connection via context
+	// ctx = context.WithValue(ctx, keys.DBSession, conn)
+
 	resp, err := s.GetCharacter(ctx, req)
 	if err != nil {
 		t.Error("Error calling GetCharacter()")
@@ -42,12 +44,14 @@ func TestStreamData(t *testing.T) {
 	utils.LoadEnvVars("../../.env")
 	conn := utils.ConnectToDb()
 	ctx := context.Background()
-	ctx = context.WithValue(ctx, keys.DBSession, conn)
+
+	// previously passing db connection via context
+	// ctx = context.WithValue(ctx, keys.DBSession, conn)
 
 	// create mock stream to be used by server
 	mockStream := test_utils.NewMockStream(ctx)
 
-	s := character.Server{}
+	s := character.Server{DB: conn}
 
 	// establish the stream within a goroutine to not block
 	// the stream has to listen on a goroutine or else

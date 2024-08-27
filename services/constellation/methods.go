@@ -3,18 +3,16 @@ package constellation
 import (
 	"context"
 
-	"genshin-grpc/keys"
 	pb_common "genshin-grpc/proto/common"
 	pb_constellation "genshin-grpc/proto/constellation"
 	"genshin-grpc/utils"
-
-	"github.com/jackc/pgx/v5"
 )
 
-func (*Server) GetConstellation(ctx context.Context, in *pb_constellation.GetConstellationRequest) (*pb_constellation.GetConstellationResponse, error) {
+func (s *Server) GetConstellation(ctx context.Context, in *pb_constellation.GetConstellationRequest) (*pb_constellation.GetConstellationResponse, error) {
 	id := in.Id
 
-	db := (ctx.Value(keys.DBSession)).(*pgx.Conn)
+	// db := (ctx.Value(keys.DBSession)).(*pgx.Conn)
+	db := s.DB
 
 	var constellationName string
 	var level uint32

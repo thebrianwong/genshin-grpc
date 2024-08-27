@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"genshin-grpc/middleware"
 	character_pb "genshin-grpc/proto/character"
 	character_service "genshin-grpc/services/character"
 	"genshin-grpc/tests"
@@ -27,15 +26,15 @@ func init() {
 	lis = bufconn.Listen(bufSize)
 
 	s := grpc.NewServer(
-		grpc.ChainStreamInterceptor(
-			middleware.DBStreamServerInterceptor(conn),
-		),
-		grpc.ChainUnaryInterceptor(
-			middleware.DBUnaryServerInterceptor(conn),
-		),
+	// grpc.ChainStreamInterceptor(
+	// 	middleware.DBStreamServerInterceptor(conn),
+	// ),
+	// grpc.ChainUnaryInterceptor(
+	// 	middleware.DBUnaryServerInterceptor(conn),
+	// ),
 	)
 
-	character_pb.RegisterCharacterServiceServer(s, &character_service.Server{})
+	character_pb.RegisterCharacterServiceServer(s, &character_service.Server{DB: conn})
 	go func() {
 		if err := s.Serve(lis); err != nil {
 			log.Fatalf("Server exited with error: %v", err)

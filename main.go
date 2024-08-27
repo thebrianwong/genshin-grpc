@@ -4,7 +4,6 @@ import (
 	"log"
 	"net"
 
-	"genshin-grpc/middleware"
 	character_pb "genshin-grpc/proto/character"
 	character_service "genshin-grpc/services/character"
 	"genshin-grpc/utils"
@@ -26,16 +25,19 @@ func main() {
 	}
 
 	s := grpc.NewServer(
-		grpc.ChainStreamInterceptor(
-			middleware.DBStreamServerInterceptor(conn),
-		),
-		grpc.ChainUnaryInterceptor(
-			middleware.DBUnaryServerInterceptor(conn),
-		),
+	// previously passing db connection via context
+	// instead of injecting it into service servers
+
+	// grpc.ChainStreamInterceptor(
+	// 	middleware.DBStreamServerInterceptor(conn),
+	// ),
+	// grpc.ChainUnaryInterceptor(
+	// 	middleware.DBUnaryServerInterceptor(conn),
+	// ),
 	)
 
-	character_pb.RegisterCharacterServiceServer(s, &character_service.Server{})
-	constellation_pb.RegisterConstellationServiceServer(s, &constellation_service.Server{})
+	character_pb.RegisterCharacterServiceServer(s, &character_service.Server{DB: conn})
+	constellation_pb.RegisterConstellationServiceServer(s, &constellation_service.Server{DB: conn})
 
 	reflection.Register(s)
 
