@@ -12,13 +12,15 @@ import (
 // MockStream implements grpc.BidiStreamingServer with generic parameters
 type MockStream struct {
 	grpc.ServerStream
+	Ctx      context.Context
 	RecvChan chan *pb_character.StreamRequest
 	SendChan chan *pb_character.StreamResponse
 }
 
 // NewMockStream creates a new instance of MockStream
-func NewMockStream() *MockStream {
+func NewMockStream(context context.Context) *MockStream {
 	return &MockStream{
+		Ctx:      context,
 		RecvChan: make(chan *pb_character.StreamRequest, 1),
 		SendChan: make(chan *pb_character.StreamResponse, 1),
 	}
@@ -39,7 +41,7 @@ func (m *MockStream) Recv() (*pb_character.StreamRequest, error) {
 
 // Mock context functions
 func (m *MockStream) Context() context.Context {
-	return context.Background()
+	return m.Ctx
 }
 
 func (m *MockStream) SendHeader(metadata.MD) error {
