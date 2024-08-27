@@ -2,7 +2,6 @@ package character_test
 
 import (
 	"context"
-	"fmt"
 	"genshin-grpc/keys"
 	pb_character "genshin-grpc/proto/character"
 	pb_common "genshin-grpc/proto/common"
@@ -10,9 +9,6 @@ import (
 	test_utils "genshin-grpc/tests"
 	"genshin-grpc/utils"
 	"testing"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 )
 
 func TestGetCharacter(t *testing.T) {
@@ -42,63 +38,12 @@ func TestGetCharacter(t *testing.T) {
 	test_utils.Compare(t, expected.Element, actual.Element)
 }
 
-// MockStream implements grpc.BidiStreamingServer with generic parameters
-type MockStream struct {
-	grpc.ServerStream
-	recvChan chan *pb_character.StreamRequest
-	sendChan chan *pb_character.StreamResponse
-}
-
-// NewMockStream creates a new instance of MockStream
-func NewMockStream() *MockStream {
-	return &MockStream{
-		recvChan: make(chan *pb_character.StreamRequest, 1),
-		sendChan: make(chan *pb_character.StreamResponse, 1),
-	}
-}
-
-func (m *MockStream) Send(resp *pb_character.StreamResponse) error {
-	m.sendChan <- resp
-	return nil
-}
-
-func (m *MockStream) Recv() (*pb_character.StreamRequest, error) {
-	req, ok := <-m.recvChan
-	if !ok {
-		return nil, fmt.Errorf("channel closed")
-	}
-	return req, nil
-}
-
-// Mock context functions
-func (m *MockStream) Context() context.Context {
-	return context.Background()
-}
-
-func (m *MockStream) SendHeader(metadata.MD) error {
-	return nil
-}
-
-func (m *MockStream) SetHeader(metadata.MD) error {
-	return nil
-}
-
-func (m *MockStream) SetTrailer(metadata.MD) {}
-
-func (m *MockStream) SendMsg(msg interface{}) error {
-	return nil
-}
-
-func (m *MockStream) RecvMsg(msg interface{}) error {
-	return nil
-}
-
 func TestStreamData(t *testing.T) {
 	utils.LoadEnvVars("../../.env")
 	conn := utils.ConnectToDb()
 
 	// create mock stream to be used by server
-	mockStream := NewMockStream()
+	mockStream := test_utils.NewMockStream()
 
 	s := character.Server{}
 	ctx := context.Background()
@@ -112,11 +57,11 @@ func TestStreamData(t *testing.T) {
 	}()
 
 	// send a request to the stream
-	mockStream.recvChan <- &pb_character.StreamRequest{Message: "test data"}
-	close(mockStream.recvChan)
+	mockStream.RecvChan <- &pb_character.StreamRequest{Message: "test data"}
+	close(mockStream.RecvChan)
 
 	// Check the response from the server
-	resp := <-mockStream.sendChan
+	resp := <-mockStream.SendChan
 
 	actual := resp.Message
 	expected := "You sent a message: test data"
