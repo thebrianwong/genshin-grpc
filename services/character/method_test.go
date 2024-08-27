@@ -41,13 +41,13 @@ func TestGetCharacter(t *testing.T) {
 func TestStreamData(t *testing.T) {
 	utils.LoadEnvVars("../../.env")
 	conn := utils.ConnectToDb()
-
-	// create mock stream to be used by server
-	mockStream := test_utils.NewMockStream()
-
-	s := character.Server{}
 	ctx := context.Background()
 	ctx = context.WithValue(ctx, keys.DBSession, conn)
+
+	// create mock stream to be used by server
+	mockStream := test_utils.NewMockStream(ctx)
+
+	s := character.Server{}
 
 	// establish the stream within a goroutine to not block
 	// the stream has to listen on a goroutine or else
