@@ -3,7 +3,6 @@ package character
 import (
 	"context"
 	"log"
-	"time"
 
 	"genshin-grpc/keys"
 	pb_character "genshin-grpc/proto/character"
@@ -14,14 +13,47 @@ import (
 )
 
 func (*Server) StreamData(stream pb_character.CharacterService_StreamDataServer) error {
+	// test on how you would call the database using context
+	// context can be extracted from stream since it isn't passed as an argument for stream methods
+
+	// ctx := stream.Context()
+	// db := (ctx.Value(keys.DBSession)).(*pgx.Conn)
+	// // var name string
+	// (*db).QueryRow(
+	// 	context.Background(),
+	// 	`
+	// 		SELECT name FROM genshin.character
+	// 		WHERE character.id=1
+	// 	`,
+	// ).Scan(&name)
+
+	// create a channel to take a request, do something with it, then respond
 	msgChannel := make(chan *pb_character.StreamResponse)
 
+	// create a channel to handle goroutine errors
+	errChannel := make(chan error)
+
+	// listen for a request from the client
+	// use a goroutine to not block the main goroutine
 	go func() {
 		for {
-			time.Sleep(5 * time.Second)
-			msgChannel <- &pb_character.StreamResponse{Message: "The current datetime is: " + time.Now().Format("January 1, 2006 | 3:04:05PM")}
+			req, err := stream.Recv()
+			if err != nil {
+				// Handle any error that occurred during receiving request
+				errChannel <- err
+				return
+			}
+			msgChannel <- &pb_character.StreamResponse{Message: "You sent a message: " + req.Message}
 		}
 	}()
+
+	// test for sending response on regular interval
+	// go func() {
+	// 	for {
+	// 		time.Sleep(5 * time.Second)
+	// 		msgChannel <- &pb_character.StreamResponse{Message: "The current datetime is: " + time.Now().Format("January 2, 2006 | 3:04:05PM")}
+	// 	}
+	// }()
 
 	for {
 		select {
@@ -30,10 +62,16 @@ func (*Server) StreamData(stream pb_character.CharacterService_StreamDataServer)
 			log.Println("Client disconnected")
 			return nil
 		case update := <-msgChannel:
+			// handle error from sending stream response
 			if err := stream.Send(update); err != nil {
 				return err
 			}
 			log.Printf("Sent update: %s", update.Message)
+		case err := <-errChannel:
+			// handle error from receiving stream request
+			if err != nil {
+				return err
+			}
 		}
 	}
 }
