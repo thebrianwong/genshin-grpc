@@ -8,6 +8,7 @@ import "proto/common/common.proto";
 
 service CharacterService {
   rpc GetCharacter(GetCharacterRequest) returns (GetCharacterResponse) {}
+  rpc StreamData(stream StreamRequest) returns (stream StreamResponse);
 }
 
 message GetCharacterRequest {
@@ -16,4 +17,12 @@ message GetCharacterRequest {
 
 message GetCharacterResponse {
   repeated common.Character character = 1;
+}
+
+message StreamRequest {
+  string message = 1;
+}
+
+message StreamResponse {
+  string message = 1;
 }

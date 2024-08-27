@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	CharacterService_GetCharacter_FullMethodName = "/character.CharacterService/GetCharacter"
+	CharacterService_StreamData_FullMethodName   = "/character.CharacterService/StreamData"
 )
 
 // CharacterServiceClient is the client API for CharacterService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CharacterServiceClient interface {
 	GetCharacter(ctx context.Context, in *GetCharacterRequest, opts ...grpc.CallOption) (*GetCharacterResponse, error)
+	StreamData(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[StreamRequest, StreamResponse], error)
 }
 
 type characterServiceClient struct {
@@ -47,11 +49,25 @@ func (c *characterServiceClient) GetCharacter(ctx context.Context, in *GetCharac
 	return out, nil
 }
 
+func (c *characterServiceClient) StreamData(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[StreamRequest, StreamResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &CharacterService_ServiceDesc.Streams[0], CharacterService_StreamData_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[StreamRequest, StreamResponse]{ClientStream: stream}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type CharacterService_StreamDataClient = grpc.BidiStreamingClient[StreamRequest, StreamResponse]
+
 // CharacterServiceServer is the server API for CharacterService service.
 // All implementations must embed UnimplementedCharacterServiceServer
 // for forward compatibility.
 type CharacterServiceServer interface {
 	GetCharacter(context.Context, *GetCharacterRequest) (*GetCharacterResponse, error)
+	StreamData(grpc.BidiStreamingServer[StreamRequest, StreamResponse]) error
 	mustEmbedUnimplementedCharacterServiceServer()
 }
 
@@ -64,6 +80,9 @@ type UnimplementedCharacterServiceServer struct{}
 
 func (UnimplementedCharacterServiceServer) GetCharacter(context.Context, *GetCharacterRequest) (*GetCharacterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCharacter not implemented")
+}
+func (UnimplementedCharacterServiceServer) StreamData(grpc.BidiStreamingServer[StreamRequest, StreamResponse]) error {
+	return status.Errorf(codes.Unimplemented, "method StreamData not implemented")
 }
 func (UnimplementedCharacterServiceServer) mustEmbedUnimplementedCharacterServiceServer() {}
 func (UnimplementedCharacterServiceServer) testEmbeddedByValue()                          {}
@@ -104,6 +123,13 @@ func _CharacterService_GetCharacter_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CharacterService_StreamData_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(CharacterServiceServer).StreamData(&grpc.GenericServerStream[StreamRequest, StreamResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type CharacterService_StreamDataServer = grpc.BidiStreamingServer[StreamRequest, StreamResponse]
+
 // CharacterService_ServiceDesc is the grpc.ServiceDesc for CharacterService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -116,6 +142,13 @@ var CharacterService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _CharacterService_GetCharacter_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "StreamData",
+			Handler:       _CharacterService_StreamData_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "proto/character/character.proto",
 }
